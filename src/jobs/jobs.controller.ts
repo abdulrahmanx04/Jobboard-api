@@ -1,0 +1,69 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, HttpCode } from '@nestjs/common';
+import { JobsService } from './jobs.service';
+import { CreateJobDto } from './dto/create-job.dto';
+import { UpdateJobDto } from './dto/update-job.dto';
+import { JwtAuthGuard } from 'src/common/guards/authguard';
+import { User } from 'src/common/decorators/current.user';
+import type { UserData } from 'src/common/interfaces/all.interfaces';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles';
+import { Paginate } from 'nestjs-paginate';
+import type { PaginateQuery } from 'nestjs-paginate';
+
+@Controller('jobs')
+export class JobsController {
+  constructor(private readonly jobsService: JobsService) {}
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles('employer')
+  @Post()
+  create(@Body() createJobDto: CreateJobDto, @User() user : UserData) {
+    return this.jobsService.create(createJobDto,user)
+  }
+
+  @Get()
+  findAll(@Paginate() query: PaginateQuery) {
+    return this.jobsService.findAll(query)
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles('employer')
+  @Get('/my-posting')
+  findEmployeJobs(@Paginate() query: PaginateQuery, @User() userData: UserData){
+    return this.jobsService.findEmployeJobs(query,userData)
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.jobsService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles('employer')
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto,@User() userData: UserData) {
+    return this.jobsService.update(id, updateJobDto,userData)
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles('employer')
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id') id: string,@User() userData: UserData) {
+    return this.jobsService.remove(id,userData);
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles('employer')
+  @Post(':id/publish')
+  publishJob(@Param('id') id: string, @User() userData: UserData) {
+    return this.jobsService.publishJob(id, userData)
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles('employer')
+  @Post(':id/close')
+  closeJob(@Param('id') id: string, @User() userData: UserData) {
+    return this.jobsService.closeJob(id, userData)
+  }
+}
