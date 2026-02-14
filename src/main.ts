@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/Http.exception';
 import { TypeORMFitler } from './common/filters/TypeORM.Exception';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +13,7 @@ async function bootstrap() {
       transform: true,
     })
   )
-  app.useGlobalFilters(new TypeORMFitler(),new HttpExceptionFilter() )
-  await app.listen(process.env.PORT ?? 3000);
+  app.useGlobalFilters(new TypeORMFitler(),new HttpExceptionFilter())
+  await app.listen(process.env.PORT ?? 3000)
 }
 bootstrap();

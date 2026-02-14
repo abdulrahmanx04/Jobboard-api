@@ -26,6 +26,11 @@ export class JobsController {
     return this.jobsService.findAll(query)
   }
 
+  @Get('company/:companyId')
+  findJobsByCompany(@Param('companyId') companyId: string,@Paginate() query: PaginateQuery){
+    return this.jobsService.findJobsByCompany(companyId,query)
+  }
+
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles('employer')
   @Get('/my-posting')

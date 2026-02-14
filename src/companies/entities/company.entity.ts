@@ -1,10 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { Job } from '../../jobs/entities/job.entity';
 import { User } from '../../auth/entities/auth.entity';
 
 @Entity('companies')
-@Index(['slug'])
 @Index(['isVerified'])
+@Index(['ownerId'])
 export class Company {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -16,13 +16,16 @@ export class Company {
   slug: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description: string | null;
 
   @Column({ nullable: true })
   website: string;
 
   @Column({ nullable: true })
-  logoUrl: string;
+  logoUrl: string 
+
+  @Column({ nullable: true })
+  logoPublicId: string 
 
   @Column({ nullable: true })
   industry: string;
@@ -50,6 +53,13 @@ export class Company {
 
   @OneToMany(() => User, user => user.company)
   employees: User[]; 
+
+  @Column()
+  ownerId: string
+
+  @ManyToOne(() => User, user => user.ownedCompanies)
+  @JoinColumn({name: 'ownerId'})
+  owner: User
 
   @CreateDateColumn()
   createdAt: Date;

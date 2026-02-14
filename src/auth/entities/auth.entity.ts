@@ -82,7 +82,6 @@ export class User {
 
     @Column('text',{array: true, nullable: true })
     skills: string[] | null
-    
 
     @OneToMany(() => Application, app => app.user)
     applications: Application[]
@@ -96,6 +95,9 @@ export class User {
     @ManyToOne(() => Company, c => c.employees, {nullable: true})
     @JoinColumn({name: 'companyId'})
     company: Company
+
+    @OneToMany(() => Company, company => company.owner)
+    ownedCompanies: Company[]
 
     @CreateDateColumn()
     createdAt: Date

@@ -21,7 +21,7 @@ export class AuthService {
     const userExists=await this.userRegistered(dto.email)
 
     if(userExists){
-      throw new BadRequestException('Email already used')
+      throw new ConflictException('Email already used')
     }
     
     const {hashedToken,url}= this. generateVerificationData('verify-email')

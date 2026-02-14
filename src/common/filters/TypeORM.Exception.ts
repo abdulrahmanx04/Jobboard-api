@@ -36,13 +36,16 @@ export class TypeORMFitler implements ExceptionFilter {
             timestamp: new Date().toISOString()
         })
     }
-            private getEntityNotFoundMessage(exception: EntityNotFoundError): string {
+             private getEntityNotFoundMessage(exception: EntityNotFoundError): string {
                 const message = exception.message;
-                const entityMatch = message.match(/entity of type "(\w+)"/)
+              
+                const entityMatch = message.match(/entity of type "(\w+)"/);
                 if (!entityMatch) {
-                    return 'Resource not found'
+                    return 'Resource not found';
                 }
+
                 const entityName = entityMatch[1]
+               
                 return  `${entityName} not found`
-        }
+            }
 }

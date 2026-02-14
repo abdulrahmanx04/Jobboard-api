@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Length, MaxLength, Min, MinLength, IsDateString } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Length, MaxLength, Min, MinLength, IsDateString, IsUUID } from "class-validator";
 import { JobType, JobLevel, JobStatus, WorkplaceType } from "../../common/enums/all-enums";
 import { Expose, Transform, Type } from "class-transformer";
 
@@ -13,6 +13,9 @@ export class CreateJobDto {
     @IsString()
     description: string
 
+    @IsOptional()
+    @IsUUID()
+    companyId: string
 
     @IsOptional()
     @IsString()
@@ -104,7 +107,20 @@ export class CreateJobDto {
     isClosed?: boolean
 
 }
+export class CompanyDto {
+    @Expose()
+    name: string
+    
+    @Expose()
+    description: string
 
+    @Expose()
+    slug: string
+
+    @Expose()
+    website: string
+
+}
 
 export class EmployerDto {
 
@@ -124,7 +140,8 @@ export class EmployerDto {
 export class JobResponseDto {
     @Expose()
     id: string
-
+    @Expose()
+    companyId: string
     @Expose()
     title: string
 
@@ -210,4 +227,8 @@ export class JobResponseDto {
     @Expose()
     @Type(() => EmployerDto)
     employer: EmployerDto
+
+    @Expose()
+    @Type(() => CompanyDto)
+    company: CompanyDto
 }
