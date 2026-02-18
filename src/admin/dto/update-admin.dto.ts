@@ -1,5 +1,5 @@
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, Length, MaxLength } from 'class-validator';
-import { ReviewStatus, UserRole } from 'src/common/enums/all-enums';
+import { ApplicationStatus, ReviewStatus, UserRole } from 'src/common/enums/all-enums';
 
 export class AdminActiveUserDto  {
     @IsOptional()
@@ -27,3 +27,26 @@ export class ReviewJobDto {
     reviewReason: string
 }
 
+
+export class AppStatus {
+    @IsNotEmpty()
+    @IsEnum(ApplicationStatus)
+    status: ApplicationStatus
+}
+
+export class VerifyCompanyDto {
+    @IsNotEmpty()
+    @IsBoolean()
+    isVerified: boolean
+}
+
+export class BanCompanyDto {
+    @IsNotEmpty()
+    @IsBoolean()
+    isBanned: boolean
+
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(500)
+    banReason: string
+}

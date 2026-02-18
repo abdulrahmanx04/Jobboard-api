@@ -5,7 +5,7 @@ import { FilterOperator, paginate, PaginateConfig, PaginateQuery } from "nestjs-
 import { Job } from "src/jobs/entities/job.entity";
 import { Repository } from "typeorm";
 import {  ReviewJobDto  } from "../dto/update-admin.dto";
-import { AdminJobResponseDto } from "../dto/create-admin.dto";
+import { AdminJobResponseDto } from "../dto/response.dto";
 import { JobStatus, ReviewStatus } from "src/common/enums/all-enums";
 @Injectable()
 export class AdminJobsService {
@@ -13,9 +13,7 @@ export class AdminJobsService {
     constructor(@InjectRepository(Job) private jobRepo: Repository<Job>,
 ){}
     async findAll(query: PaginateQuery): Promise<{data: AdminJobResponseDto[] ,meta: any}> {
-        const jobs =await paginate(query,this.jobRepo,{
-            ...this.adminJobPaginateConfig
-        })
+        const jobs =await paginate(query,this.jobRepo,this.adminJobPaginateConfig)
         const data= plainToInstance(AdminJobResponseDto, jobs.data,{excludeExtraneousValues: true})
         return {
             ...jobs,
@@ -28,7 +26,7 @@ export class AdminJobsService {
         return plainToInstance(AdminJobResponseDto, job, {excludeExtraneousValues: true})
     }
     
-    async approveJob(id: string){
+    async approveJob(id: string) : Promise<AdminJobResponseDto>{
         const job=  await this.jobRepo.findOneOrFail({where: {id},relations: ['company','employer']})
         this.checkStatus(job,JobStatus.PUBLISHED,ReviewStatus.PENDING,'Job must be published','Job must be pending')
         job.reviewStatus= ReviewStatus.APPROVED
@@ -37,7 +35,7 @@ export class AdminJobsService {
         return plainToInstance(AdminJobResponseDto, saved, {excludeExtraneousValues: true})
     }
 
-    async rejectJob(id: string,dto:  ReviewJobDto ){
+    async rejectJob(id: string,dto:  ReviewJobDto ): Promise<AdminJobResponseDto>{
         const job=  await this.jobRepo.findOneOrFail({where: {id},relations: ['company','employer']})
 
         this.checkStatus(job,JobStatus.PUBLISHED,ReviewStatus.PENDING,'Job must be published','Job must be pending')
@@ -47,7 +45,7 @@ export class AdminJobsService {
         return plainToInstance(AdminJobResponseDto,saved,{excludeExtraneousValues: true})
     }
 
-    async takeDowmJob(id: string, dto: ReviewJobDto) {
+    async takeDowmJob(id: string, dto: ReviewJobDto): Promise<AdminJobResponseDto> {
           const job=  await this.jobRepo.findOneOrFail({where: {id},relations: ['company','employer']})
 
           this.checkStatus(job,JobStatus.PUBLISHED,ReviewStatus.APPROVED,'Job must be published','Job must be approved')
@@ -59,7 +57,7 @@ export class AdminJobsService {
           return plainToInstance(AdminJobResponseDto,saved,{excludeExtraneousValues: true})
     }
 
-    async restoreJob(id: string) {
+    async restoreJob(id: string): Promise<AdminJobResponseDto> {
         const job=  await this.jobRepo.findOneOrFail({where: {id},relations: ['company','employer']})
 
         this.checkStatus(job,JobStatus.PUBLISHED,ReviewStatus.TAKEN_DOWN,'Job must be published','Job was not taken down to restore it')

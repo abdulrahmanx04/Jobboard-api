@@ -4,7 +4,7 @@ import { plainToInstance } from 'class-transformer';
 import { FilterOperator, paginate, PaginateConfig, PaginateQuery } from 'nestjs-paginate';
 import { User } from 'src/auth/entities/auth.entity';
 import { Repository } from 'typeorm';
-import { AdminUserResponseDto } from '../dto/create-admin.dto';
+import { AdminUserResponseDto } from '../dto/response.dto';
 import { AdminActiveUserDto, AdminUserRoleDto } from '../dto/update-admin.dto';
 import { UserRole } from 'src/common/enums/all-enums';
 
@@ -13,10 +13,8 @@ import { UserRole } from 'src/common/enums/all-enums';
 export class AdminUserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>){}
 
-  async findAll(query: PaginateQuery) {
-      const users= await paginate(query,this.userRepo, {
-        ...this.usersConfig
-      })
+  async findAll(query: PaginateQuery): Promise<{meta: any, data: AdminUserResponseDto[]}> {
+      const users= await paginate(query,this.userRepo, this.usersConfig)
       let data= plainToInstance(AdminUserResponseDto,users.data, {excludeExtraneousValues: true})
       return {
         ...users,
@@ -24,12 +22,12 @@ export class AdminUserService {
       }
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<AdminUserResponseDto> {
     const user= await this.userRepo.findOneOrFail({where: {id}})
     return plainToInstance(AdminUserResponseDto,user, {excludeExtraneousValues: true})
   }
 
-   async updateActive(id: string, dto: AdminActiveUserDto) {
+   async updateActive(id: string, dto: AdminActiveUserDto): Promise<AdminUserResponseDto> {
     if (dto.isActive === undefined && dto.isVerified === undefined) {
          throw new BadRequestException('Nothing to update')
     }
@@ -40,7 +38,7 @@ export class AdminUserService {
     return plainToInstance(AdminUserResponseDto,user, {excludeExtraneousValues: true})
   }
 
-  async updateRole(id: string, dto: AdminUserRoleDto) {
+  async updateRole(id: string, dto: AdminUserRoleDto): Promise<AdminUserResponseDto> {
     
     const user= await this.userRepo.findOneOrFail({where: {id}})
 
@@ -50,7 +48,6 @@ export class AdminUserService {
     await this.userRepo.save(this.userRepo.merge(user,dto))
     return plainToInstance(AdminUserResponseDto,user, {excludeExtraneousValues: true})
   }
-
 
   checkRole(user: User,dto: AdminUserRoleDto) {
     if (dto.role === undefined)  {

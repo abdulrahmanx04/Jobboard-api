@@ -56,10 +56,10 @@ export class Application {
     employerNote: string
 
     @Column({ type: 'timestamp', nullable: true })
-    withdrawnAt: Date
+    withdrawnAt: Date | null
 
-    @DeleteDateColumn()
-    deletedAt: Date
+    @DeleteDateColumn({type: 'timestamp', nullable: true})
+    deletedAt: Date | null
 
     @CreateDateColumn()
     appliedAt: Date

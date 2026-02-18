@@ -1,9 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, Index, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, Index, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 import { Job } from '../../jobs/entities/job.entity';
 import { User } from '../../auth/entities/auth.entity';
 
 @Entity('companies')
 @Index(['isVerified'])
+@Index(['isActive'])
+@Index(['isBanned'])
 @Index(['ownerId'])
 export class Company {
   @PrimaryGeneratedColumn('uuid')
@@ -47,6 +49,15 @@ export class Company {
 
   @Column({ default: false })
   isVerified: boolean;
+
+  @Column({ default: false })
+  isActive: boolean;
+
+  @Column({ default: false })
+  isBanned: boolean;
+
+  @Column({type: 'varchar', nullable: true})
+  banReason: string | null
   
   @OneToMany(() => Job, job => job.company)
   jobs: Job[];
@@ -66,4 +77,7 @@ export class Company {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date
 }

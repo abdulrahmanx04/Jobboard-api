@@ -9,9 +9,13 @@ import { Application } from 'src/applications/entities/application.entity';
 import { JobsModule } from 'src/jobs/jobs.module';
 import { AdminJobsService } from './services/admin.jobs.service';
 import { AdminJobController } from './controllers/admin.jobs.controller';
+import { AdminAppService } from './services/admin.applications.service';
+import { AdminAppController } from './controllers/admin.applications.controller';
+import { AdminCompaniesService } from './services/admin.companies.service';
+import { AdminCompaniesController } from './controllers/admin.companies.controllet';
 @Module({
   imports: [TypeOrmModule.forFeature([User,Job,Company,Application]),JobsModule],
-  controllers: [AdminUserController,AdminJobController],
-  providers: [AdminUserService,AdminJobsService],
+  controllers: [AdminUserController,AdminJobController,AdminAppController,AdminCompaniesController],
+  providers: [AdminUserService,AdminJobsService,AdminAppService,AdminCompaniesService],
 })
 export class AdminModule {}
